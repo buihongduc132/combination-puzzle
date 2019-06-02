@@ -18,7 +18,7 @@
     const MAX_NUMBER_OF_COLORS = 6;
     let iteratedNumber = 0
     let resultLength = 0;
-    
+
     function testCondition(input, givenResult) {
       const currentTest = givenResult.test
       let testResult = ''
@@ -74,7 +74,7 @@
 
       return _.map(inputRows, (inputRow) => {
         let [inputColorString, inputResult] = inputRow.split(':')
-        console.log({ inputRow, inputResult});
+        console.log({ inputRow, inputResult });
         inputResult = inputResult.trim()
 
         const inputColors = inputColorString.split(' ')
@@ -160,13 +160,14 @@ xanh do vang cam: yyyy
     <div class="row" style="padding: 10px">
       <div class="input-group">
         <textarea id="userManualInputs" class="form-control" rows="5" aria-label="With textarea">
-6 8 2: xy
+6 8 2: x
 6 1 4: y
 2 0 6: yy
-7 3 8: 
+7 3 8:
 7 8 0: y
 </textarea>
       </div>
+      <a target="_blank" href="https://puzzling.stackexchange.com/questions/46871/crack-the-lock-code">Another Interesting Example</a>
     </div>
     <div class="row" style="padding: 10px">
       <div class="col-sm text-center">
