@@ -66,12 +66,15 @@
 
     function fetchUserInput() {
       const rawInput = $('#userManualInputs')[0].value;
+
+      console.log(rawInput);
       const userContents = rawInput.toLowerCase().trim().replace(/\s\s/g, ' ')
 
       const inputRows = userContents.split('\n');
 
       return _.map(inputRows, (inputRow) => {
         let [inputColorString, inputResult] = inputRow.split(':')
+        console.log({ inputRow, inputResult});
         inputResult = inputResult.trim()
 
         const inputColors = inputColorString.split(' ')
@@ -157,10 +160,11 @@ xanh do vang cam: yyyy
     <div class="row" style="padding: 10px">
       <div class="input-group">
         <textarea id="userManualInputs" class="form-control" rows="5" aria-label="With textarea">
-vang tim do xanh: yy
-tim do xanh cam: xyy
-cam xanh tim nau: xyy
-do cam nau tim: yyy
+6 8 2: xy
+6 1 4: y
+2 0 6: yy
+7 3 8: 
+7 8 0: y
 </textarea>
       </div>
     </div>
