@@ -8,6 +8,11 @@ const t = 'ttt'
 const n = 'nnn'
 
 const colors = [v, x, d, c, t, n]
+let finalResult = []
+const MAX_NUMBER_OF_COLORS = 8
+let iteratedNumber = 0
+let resultLength = 0;
+
 // const givenResults = [
 //   {
 //     test: [v, x, d, d],
@@ -23,37 +28,48 @@ const colors = [v, x, d, c, t, n]
 //   },
 // ]
 
-const givenResults = [
-  { test: [t,d,x,t], result: 'y' },
-  { test: [v,n,t,x], result: 'yyy' },
-  { test: [x,c,t,v], result: 'yyy' },
-  { test: [n,x,v,c], result: 'xyy' },
-]
-
 // const givenResults = [
-//   { test: [t,v,v,c], result: 'xyy' },
-//   { test: [v,c,n,x], result: 'yy' },
-//   { test: [n,t,c,v], result: 'yyy' },
-//   { test: [c,c,t,v], result: 'xxy' },
-//   { test: [d,c,v,d], result: 'yy' },
+//   { test: [t,d,x,t], result: 'y' },
+//   { test: [v,n,t,x], result: 'yyy' },
+//   { test: [x,c,t,v], result: 'yyy' },
+//   { test: [n,x,v,c], result: 'xyy' },
 // ]
 
-// const colors = _.uniq(_.flatten(_.concat(_.map(givenResults, 'test'))))
+// 25
+const givenResults = [
+  { test: [x,d,t,v], result: 'y' },
+  { test: [d,v,c,n], result: 'xy' },
+  { test: [n,c,d,x], result: 'xy' },
+  { test: [v,x,n,d], result: 'y' },
+  { test: [d,n,c,d], result: 'xx' },
+]
 
-const resultLength = 4
+// // 26
+// const givenResults = [
+//   { test: [t, v, v, c], result: 'xyy' },
+//   { test: [v, c, n, x], result: 'yy' },
+//   { test: [n, t, c, v], result: 'yyy' },
+//   { test: [c, c, t, v], result: 'xxy' },
+//   { test: [d, c, v, d], result: 'yy' },
+// ]
+
+// // 27
+// const givenResults = [
+//   { test: [v,t,d,x], result: 'yy' },
+//   { test: [t,d,x,c], result: 'xyy' },
+//   { test: [c,x,t,n], result: 'xyy' },
+//   { test: [d,c,n,t], result: 'yyy' },
+// ]
 
 function testCondition(input, givenResult) {
-  // let testResult = ''.padEnd(resultLength, '_');
   const currentTest = givenResult.test
-  // console.log('========', currentTest, '===', givenResult.result)
-  // console.log({ input });
   let testResult = ''
 
   for (let i = 0; i < resultLength; i++) {
     if (currentTest[i] === input[i]) {
       testResult = 'x' + testResult
     } else {
-      if (input.includes(currentTest[i])) {
+      if (currentTest.includes(input[i])) {
         testResult = testResult + 'y'
       }
     }
@@ -62,7 +78,7 @@ function testCondition(input, givenResult) {
   testResult = testResult.padEnd(resultLength, '_')
 
   const currentResult = givenResult.result.padEnd(resultLength, '_')
-  // console.log(testResult, currentResult);
+
   return {
     input,
     test_: givenResult.test,
@@ -72,54 +88,47 @@ function testCondition(input, givenResult) {
   }
 }
 
-function getRandomResult() {
-  let randomColor = []
-  if (isHaveSameColor) {
-    while (randomColor.length < resultLength) {
-      const currentCollor = _.shuffle(colors)[0]
-      randomColor.push(currentCollor)
+
+for (let i = 1; i <= MAX_NUMBER_OF_COLORS && finalResult.length === 0; i++) {
+  resultLength = i;
+  const caseOptions = _.fill(Array(i), colors)
+
+  const allCases = _.map(allPossibleCases(caseOptions), (possibleCase) => possibleCase.split('_'))
+
+  _.map(allCases, function(thisCase) {
+    const randomResult = thisCase
+
+    const totalResult = _.map(givenResults, (result) => {
+      return testCondition(randomResult, result)
+    })
+
+    const correctResult = _.filter(totalResult, 'matched')
+
+    if (correctResult.length === givenResults.length) {
+      finalResult.push(thisCase)
     }
-  }
-  else {
-   randomColor =  _.shuffle(colors).slice(0, resultLength);
-  }
-  return randomColor
-}
-
-let finalResult = null
-let maxIteration = 0
-let currentIteration = 0
-let isHaveSameColor = false
-
-function doGuess(givenResult) {
-  // const testResult = givenResult.result;
-  console.log(testResult);
-  const matchColors = (testResult.match(/y/g) || []).length;
-  const matchPosition = (testResult.match(/x/g) || []).length;
-
-  console.log({matchColors, matchPosition});
-}
-
-while (!finalResult && currentIteration < maxIteration) {
-  const randomResult = getRandomResult()
-  // const randomResult = [c,x,n,d];
-
-  const totalResult = _.map(givenResults, (result) => {
-    return testCondition(randomResult, result)
+    iteratedNumber++
   })
-
-  const correctResult = _.filter(totalResult, 'matched')
-
-  if (correctResult.length === givenResults.length) {
-    finalResult = randomResult
-  }
-
-  currentIteration++
 }
 
-console.log(doGuess())
+console.log({
+  finalResult,
+  iteratedNumber,
+})
 
-// console.log({
-//   currentIteration,
-//   finalResult,
-// })
+function allPossibleCases(arr) {
+  if (arr.length === 0) {
+    return []
+  } else if (arr.length === 1) {
+    return arr[0]
+  } else {
+    let result = []
+    let allCasesOfRest = allPossibleCases(arr.slice(1)) // recur with the rest of array
+    for (let c in allCasesOfRest) {
+      for (let i = 0; i < arr[0].length; i++) {
+        result.push(arr[0][i] + '_' + allCasesOfRest[c])
+      }
+    }
+    return result
+  }
+}

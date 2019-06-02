@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js"></script>
+  <script>
+    const MAX_NUMBER_OF_COLORS = 6;
+    let iteratedNumber = 0
+    let resultLength = 0;
+    
+    function testCondition(input, givenResult) {
+      const currentTest = givenResult.test
+      let testResult = ''
+
+      for (let i = 0; i < resultLength; i++) {
+        if (currentTest[i] === input[i]) {
+          testResult = 'x' + testResult
+        } else {
+          if (currentTest.includes(input[i])) {
+            testResult = testResult + 'y'
+          }
+        }
+      }
+
+      testResult = testResult.padEnd(resultLength, '_')
+
+      const currentResult = givenResult.result.padEnd(resultLength, '_')
+
+      return {
+        input,
+        test_: givenResult.test,
+        testResult___: testResult,
+        currentResult,
+        matched: testResult === currentResult,
+      }
+    }
+
+
+    function allPossibleCases(arr) {
+      if (arr.length === 0) {
+        return []
+      } else if (arr.length === 1) {
+        return arr[0]
+      } else {
+        let result = []
+        let allCasesOfRest = allPossibleCases(arr.slice(1))
+        for (let c in allCasesOfRest) {
+          for (let i = 0; i < arr[0].length; i++) {
+            result.push(arr[0][i] + '_' + allCasesOfRest[c])
+          }
+        }
+        return result
+      }
+    }
+
+    function fetchUserInput() {
+      const rawInput = $('#userManualInputs')[0].value;
+      const userContents = rawInput.toLowerCase().trim().replace(/\s\s/g, ' ')
+
+      const inputRows = userContents.split('\n');
+
+      return _.map(inputRows, (inputRow) => {
+        let [inputColorString, inputResult] = inputRow.split(':')
+        inputResult = inputResult.trim()
+
+        const inputColors = inputColorString.split(' ')
+
+        return {
+          test: inputColors,
+          result: inputResult,
+        }
+      })
+    }
+
+    function getAllColors(givenResults) {
+      return _.uniq(_.flatten(_.map(givenResults, 'test')));
+    }
+
+    function calculateResult(givenResults) {
+      console.log(givenResults);
+      let finalResult = []
+      const colors = getAllColors(givenResults);
+
+      for (let i = 1; i <= MAX_NUMBER_OF_COLORS && finalResult.length === 0; i++) {
+        resultLength = i
+        const caseOptions = Array(i).fill(colors)
+
+        const allCases = _.map(allPossibleCases(caseOptions), (possibleCase) => possibleCase.split('_'));
+
+        _.map(allCases, function (thisCase) {
+          const randomResult = thisCase
+
+          const totalResult = _.map(givenResults, (result) => {
+            return testCondition(randomResult, result)
+          })
+
+          const correctResult = _.filter(totalResult, 'matched')
+
+          if (correctResult.length === givenResults.length) {
+            finalResult.push(thisCase)
+          }
+          iteratedNumber++
+        })
+      }
+
+      return finalResult;
+    }
+
+
+    function checkUserInput() {
+      $('#loadingSection').show();
+      $('#resultSection').hide();
+      try {
+        const givenResults = fetchUserInput();
+        const calculatedResult = calculateResult(givenResults);
+        const processedOutput = _.join(calculatedResult, '\n') || 'NOT FOUND :((';
+        console.log(_.join(calculatedResult, '\n'))
+        $('#generatedResult').val(processedOutput)
+        $('#resultSection').show();
+      } catch (e) {
+        console.log(e);
+        alert("Wrong Input Format");
+      } finally {
+        $('#loadingSection').hide();
+      }
+    }
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="container">
+    Example of input:
+    <div class="row" style="padding: 10px">
+      <div class="input-group">
+        <textarea disabled class="form-control" aria-label="With textarea" rows="3">
+vang xanh do do: xyy
+do cam vang xanh: yyyy
+xanh do vang cam: yyyy
+</textarea>
+      </div>
+    </div>
+    <div class="row" style="padding: 10px">
+      <div class="input-group">
+        <textarea id="userManualInputs" class="form-control" rows="5" aria-label="With textarea">
+xanh do tim vang:y
+do vang cam nau:xy
+nau cam do xanh: xy
+vang xanh nau do: y
+do nau cam do: xx
+</textarea>
+      </div>
+    </div>
+    <div class="row" style="padding: 10px">
+      <div class="col-sm text-center">
+        <button type="button" class="btn btn-primary" onClick="checkUserInput()">Get Result</button>
+      </div>
+    </div>
+    <div class="row" id="resultSection" style="display:none;">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Result</span>
+        </div>
+        <textarea id="generatedResult" type="text" class="form-control" rows="5" disabled></textarea>
+      </div>
+    </div>
+    <div class="row" id="loadingSection" style="display:none;">
+      <div class="col-sm text-center">
+        <div class="spinner-grow text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-secondary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-success" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-danger" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-warning" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-info" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-light" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
