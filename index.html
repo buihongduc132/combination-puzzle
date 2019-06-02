@@ -136,32 +136,49 @@
         alert("Wrong Input Format");
       } finally {
         $('#loadingSection').hide();
+
+        $('html, body').animate({
+          scrollTop: $(hash).offset().top
+        }, 800, function () {
+          window.location.hash = hash;
+        });
       }
     }
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Document</title>
+  <title>Combination Lock Solver - ... in a very crude way</title>
 </head>
 
 <body>
   <div class="container">
-    Example of input:
+    <div class="row">
+      <div class="col-sm text-center">
+      </div>
+    </div>
     <div class="row" style="padding: 10px">
-      <div class="input-group">
-        <textarea disabled class="form-control" aria-label="With textarea" rows="3">
-vang xanh do do: xyy
-do cam vang xanh: yyyy
-xanh do vang cam: yyyy
+      <div class="col col-2">
+        <span>
+          <img src="https://i.stack.imgur.com/ZHs7v.jpg" alt="Smiley face" style="max-width: 100%;">
+        </span>
+      </div>
+      <div class="col col-10">
+        Example of input:
+        <div class="input-group">
+          <textarea disabled class="form-control" aria-label="With textarea" rows="3">
+yellow green red red: xyy
+red orange yellow green: yyyy
+green red yellow orange: yyyy
 </textarea>
+        </div>
       </div>
     </div>
     <div class="row">
       <div class="col-sm">
         Description:
-        <br>X: Correct Number/Color and place correctly. 
-        <br>Y: Correct Number/Color but wrong placed. 
+        <br>X: Correct Number/Color and place correctly.
+        <br>Y: Correct Number/Color but wrong placed.
       </div>
     </div>
     <div class="row" style="padding: 10px">
@@ -174,7 +191,8 @@ xanh do vang cam: yyyy
 7 8 0: y
 </textarea>
       </div>
-      <a target="_blank" href="https://puzzling.stackexchange.com/questions/46871/crack-the-lock-code">Another Interesting Example</a>
+      <a target="_blank" href="https://puzzling.stackexchange.com/questions/46871/crack-the-lock-code">Another
+        Interesting Example</a>
     </div>
     <div class="row" style="padding: 10px">
       <div class="col-sm text-center">
